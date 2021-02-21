@@ -1,26 +1,48 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <TheNavigation/>
+  <TheLoader v-if="showLoading"/>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div>
+          <router-view></router-view>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import TheNavigation from "./components/TheNavigation";
+import TheLoader from "@/components/TheLoader";
+import {mapState} from "vuex";
+import {AUTO_LOGIN_ACTION} from "@/store/storeconstants";
 
 export default {
   name: 'App',
+  computed: {
+    ...mapState({
+      showLoading: state => state.showLoading,
+      autoLogout: state => state.auth.autoLogout
+    })
+  },
+  watch: {
+    autoLogout(curValue, oldValue) {
+      if (curValue && curValue !== oldValue) {
+        this.$router.replace('/login')
+      }
+    }
+  },
   components: {
-    HelloWorld
+    TheNavigation,
+    TheLoader
+  },
+  created() {
+    this.$store.dispatch(`auth/${AUTO_LOGIN_ACTION}`)
   }
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
